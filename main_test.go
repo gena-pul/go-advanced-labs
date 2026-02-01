@@ -162,3 +162,59 @@ func TestMakeAccumulator(t *testing.T) {
 		})
 	}
 }
+
+func TestApply(t *testing.T) {
+	tests := []struct {
+		name      string
+		input     []int
+		operation func(int) int
+		want      []int
+	}{
+		{
+			name:      "square numbers",
+			input:     []int{1, 2, 3, 4},
+			operation: func(x int) int { return x * x },
+			want:      []int{2, 4, 6},
+		},
+		{
+			name:      "square numbers",
+			input:     []int{1, 2, 3, 4},
+			operation: func(x int) int { return x * x },
+			want:      []int{1, 4, 9, 16},
+		},
+		{
+			name:      "double numbers",
+			input:     []int{1, 2, 3},
+			operation: func(x int) int { return x * 2 },
+			want:      []int{2, 4, 6},
+		},
+		{
+			name:      "negate numbers",
+			input:     []int{1, -2, 3},
+			operation: func(x int) int { return -x },
+			want:      []int{-1, 2, -3},
+		},
+		{
+			name:      "empty slice",
+			input:     []int{},
+			operation: func(x int) int { return x + 1 },
+			want:      []int{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Apply(tt.input, tt.operation)
+			if len(got) != len(tt.want) {
+				t.Fatalf("length mismatch: got %v want %v", got, tt.want)
+			}
+			for i := range got {
+				if got[i] != tt.want[i] {
+					t.Errorf("index %d: got %d want %d", i, got[i], tt.want[i])
+				}
+			}
+			if &got == &tt.input {
+				t.Errorf("Apply modified the original slice")
+			}
+		})
+	}
+}
