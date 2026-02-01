@@ -87,3 +87,78 @@ func TestPower(t *testing.T) {
 		})
 	}
 }
+
+func TestMakeCounter(t *testing.T) {
+	tests := []struct {
+		name      string
+		start     int
+		calls     int
+		wantAfter int
+	}{
+		{"start at 0, call once", 0, 1, 1},
+		{"start at 0, call twice", 0, 2, 2},
+		{"start at 10, call once", 10, 1, 11},
+		{"independent counters", 5, 3, 8},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			counter := MakeCounter(tt.start)
+			var got int
+			for i := 0; i < tt.calls; i++ {
+				got = counter()
+			}
+
+			if got != tt.wantAfter {
+				t.Errorf("got %d, want %d", got, tt.wantAfter)
+			}
+		})
+	}
+}
+func TestMakeMultiplier(t *testing.T) {
+	tests := []struct {
+		name   string
+		factor int
+		input  int
+		want   int
+	}{
+		{"double 5", 2, 5, 10},
+		{"3 is prime", 3, 5, 15},
+		{"zero factor", 0, 7, 0},
+		{"negative factor", -2, 4, -8},
+		{"factor 1", 1, 9, 9},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mult := MakeMultiplier(tt.factor)
+			got := mult(tt.input)
+			if got != tt.want {
+				t.Errorf("got %d, want %d", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMakeAccumulator(t *testing.T) {
+	tests := []struct {
+		name      string
+		initial   int
+		addVal    int
+		subVal    int
+		wantFinal int
+	}{
+		{"basic case", 100, 50, 30, 120},
+		{"start at zero", 0, 10, 5, 5},
+		{"all negative", -10, -5, -5, -10},
+		{"no change", 20, 0, 0, 20},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			add, sub, get := MakeAccumulator(tt.initial)
+			add(tt.addVal)
+			sub(tt.subVal)
+			if get() != tt.wantFinal {
+				t.Errorf("got %d, want %d", get(), tt.wantFinal)
+			}
+		})
+	}
+}
