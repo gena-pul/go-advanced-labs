@@ -1,3 +1,5 @@
+
+
 package main
 
 import (
@@ -174,12 +176,6 @@ func TestApply(t *testing.T) {
 			name:      "square numbers",
 			input:     []int{1, 2, 3, 4},
 			operation: func(x int) int { return x * x },
-			want:      []int{2, 4, 6},
-		},
-		{
-			name:      "square numbers",
-			input:     []int{1, 2, 3, 4},
-			operation: func(x int) int { return x * x },
 			want:      []int{1, 4, 9, 16},
 		},
 		{
@@ -214,6 +210,159 @@ func TestApply(t *testing.T) {
 			}
 			if &got == &tt.input {
 				t.Errorf("Apply modified the original slice")
+			}
+		})
+	}
+}
+func TestFilter(t *testing.T) {
+	tests := []struct {
+		name      string
+		input     []int
+		predicate func(int) bool
+		want      []int
+	}{
+		{
+			name:      "only evens",
+			input:     []int{1, 2, 3, 4, 5, 6},
+			predicate: func(x int) bool { return x%2 == 0 },
+			want:      []int{2, 4, 6},
+		},
+		{
+			name:      "only positives",
+			input:     []int{-2, -1, 0, 1, 2},
+			predicate: func(x int) bool { return x > 0 },
+			want:      []int{1, 2},
+		},
+		{
+			name:      "greater than 10",
+			input:     []int{5, 10, 15, 20},
+			predicate: func(x int) bool { return x > 10 },
+			want:      []int{15, 20},
+		},
+		{
+			name:      "nothing passes",
+			input:     []int{1, 3, 5},
+			predicate: func(x int) bool { return x%2 == 0 },
+			want:      []int{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Filter(tt.input, tt.predicate)
+			if len(got) != len(tt.want) {
+				t.Fatalf("length mismatch: got %v want %v", got, tt.want)
+			}
+			for i := range got {
+				if got[i] != tt.want[i] {
+					t.Errorf("index %d: got %d want %d", i, got[i], tt.want[i])
+				}
+			}
+		})
+	}
+}
+
+func TestReduce(t *testing.T) {
+	tests := []struct {
+		name      string
+		input     []int
+		initial   int
+		operation func(int, int) int
+		want      int
+	}{
+		{
+			name:      "sum",
+			input:     []int{1, 2, 3, 4},
+			initial:   0,
+			operation: func(acc, x int) int { return acc + x },
+			want:      10,
+		},
+		{
+			name:      "product",
+			input:     []int{1, 2, 3, 4},
+			initial:   1,
+			operation: func(acc, x int) int { return acc * x },
+			want:      24,
+		},
+		{
+			name:    "max",
+			input:   []int{5, 2, 9, 1},
+			initial: 0,
+			operation: func(acc, x int) int {
+				if x > acc {
+					return x
+				}
+				return acc
+			},
+			want: 9,
+		},
+		{
+			name:    "min",
+			input:   []int{5, 2, 9, 1},
+			initial: 100,
+			operation: func(acc, x int) int {
+				if x < acc {
+					return x
+				}
+				return acc
+			},
+			want: 1,
+		},
+		{
+			name:      "empty slice",
+			input:     []int{},
+			initial:   42,
+			operation: func(acc, x int) int { return acc + x },
+			want:      42,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Reduce(tt.input, tt.initial, tt.operation)
+			if got != tt.want {
+				t.Errorf("got %d want %d", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCompose(t *testing.T) {
+	tests := []struct {
+		name  string
+		f     func(int) int
+		g     func(int) int
+		input int
+		want  int
+	}{
+		{
+			name:  "double then add two",
+			g:     func(x int) int { return x * 2 },
+			f:     func(x int) int { return x + 2 },
+			input: 5,
+			want:  12,
+		},
+		{
+			name:  "add five then square",
+			g:     func(x int) int { return x + 5 },
+			f:     func(x int) int { return x * x },
+			input: 3,
+			want:  64,
+		},
+		{
+			name:  "negate then double",
+			g:     func(x int) int { return -x },
+			f:     func(x int) int { return x * 2 },
+			input: 4,
+			want:  -8,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			composed := Compose(tt.f, tt.g)
+			got := composed(tt.input)
+			if got != tt.want {
+				t.Errorf("got %d want %d", got, tt.want)
 			}
 		})
 	}
