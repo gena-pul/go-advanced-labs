@@ -326,7 +326,10 @@ func TestReduce(t *testing.T) {
 		})
 	}
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> part-4
 func TestCompose(t *testing.T) {
 	tests := []struct {
 		name  string
