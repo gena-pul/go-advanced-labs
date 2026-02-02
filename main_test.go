@@ -386,3 +386,25 @@ func TestSwapPointers(t *testing.T) {
 		})
 	}
 }
+
+func TestSwapValues(t *testing.T) {
+	tests := []struct {
+		name         string
+		a, b         int
+		wantA, wantB int
+	}{
+		{"basic swap", 1, 2, 1, 2},
+		{"same values", 5, 5, 5, 5},
+		{"negatives", -3, 7, -3, 7},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, b := tt.a, tt.b
+			SwapValues(a, b)
+			if a != tt.wantA || b != tt.wantB {
+				t.Errorf("after SwapValues got (%d, %d), want (%d, %d)",
+					a, b, tt.wantA, tt.wantB)
+			}
+		})
+	}
+}
