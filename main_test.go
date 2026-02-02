@@ -1,5 +1,3 @@
-
-
 package main
 
 import (
@@ -326,10 +324,6 @@ func TestReduce(t *testing.T) {
 		})
 	}
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> part-4
 func TestCompose(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -366,6 +360,28 @@ func TestCompose(t *testing.T) {
 			got := composed(tt.input)
 			if got != tt.want {
 				t.Errorf("got %d want %d", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSwapPointers(t *testing.T) {
+	tests := []struct {
+		name         string
+		a, b         int
+		wantA, wantB int
+	}{
+		{"basic swap", 1, 2, 2, 1},
+		{"same values", 5, 5, 5, 5},
+		{"negatives", -1, 3, 3, -1},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, b := tt.a, tt.b
+			SwapPointers(&a, &b)
+			if a != tt.wantA || b != tt.wantB {
+				t.Errorf("got (%d, %d), want (%d,%d)",
+					a, b, tt.wantA, tt.wantB)
 			}
 		})
 	}
