@@ -156,3 +156,58 @@ func SwapValues(a, b int) (int, int) {
 func SwapPointers(a, b *int) {
 	*a, *b = *b, *a
 }
+
+func main() {
+	fmt.Println("===== Process Information =====")
+	ExploreProcess()
+
+	fmt.Println("\n===== Math operations ===== ")
+	if v, err := Factorial(5); err == nil {
+		fmt.Println("Factorial (5) = ", v)
+	}
+	if p, err := IsPrime(17); err == nil {
+		fmt.Println("IsPrime (17) = ", p)
+	}
+	if v, err := Power(2, 8); err == nil {
+		fmt.Println("Power(2, 8) = ", v)
+	}
+	fmt.Println("[etc.]")
+
+	fmt.Println("\n===== Closure Demonstration =====")
+	c1 := MakeCounter(0)
+	c2 := MakeCounter(100)
+
+	fmt.Println("Counter 1: ", c1())
+	fmt.Println("Counter 1: ", c1())
+	fmt.Println("Counter 2: ", c2())
+
+	doubler := MakeMultiplier(2)
+	fmt.Println("Doubler(5) = ", doubler(5))
+	fmt.Println("[etc.]")
+
+	fmt.Println("\n ===== High-Order FUnctions =====")
+	nums := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+	fmt.Println("Original:", nums)
+	squared := Apply(nums, func(x int) int { return x * x })
+	fmt.Println("Squared: ", squared)
+
+	evens := Filter(nums, func(x int) bool { return x%2 == 0 })
+	fmt.Println("Evens: ", evens)
+
+	sums := Reduce(nums, 0, func(acc, x int) int { return acc + x })
+	fmt.Println("Sums: ", sums)
+	fmt.Println("[etc.]")
+
+	fmt.Println("\n===== Pointer & Escape Demonstration =====")
+
+	a, b := 5, 10
+	fmt.Println("Before SwapValues: a = ", a, ", b = ", b)
+	SwapValues(a, b)
+	fmt.Println("After SwapValues: a = ", a, ", b = ", b, " (originals unchanged)")
+
+	fmt.Println("Before SwapPointers: a = ", a, ", b = ", b)
+	SwapPointers(&a, &b)
+	fmt.Println("After Swap Pointers: a = ", a, ", b = ", b)
+	fmt.Println("[etc.]")
+}
